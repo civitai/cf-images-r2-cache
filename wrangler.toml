@@ -1,4 +1,4 @@
-name = "image-cache"
+name = "civitai-image-cache"
 main = "src/index.ts"
 compatibility_date = "2022-11-18"
 
@@ -7,6 +7,7 @@ r2_buckets = [
 ]
 
 [env.staging]
+name = "civitai-image-cache-staging"
 r2_buckets = [
     { binding = "CACHE_BUCKET", bucket_name = "civitai-image-cache-dev", preview_bucket_name = "civitai-image-cache-dev"}
 ]
