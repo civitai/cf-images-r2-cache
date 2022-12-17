@@ -59,6 +59,8 @@ async function handleRequest(request: Request, env: Env, ctx: ExecutionContext) 
   const headers = new Headers({
     // Cache it in the browser for your specified time
     'cache-control': `public, max-age=${env.CACHE_DURATION ?? maxAge}`,
+    'access-control-allow-origin': '*',
+    'content-security-policy': "default-src 'none'; navigate-to 'none'; form-action 'none'"
   });
   response = new Response(image, { headers });
 
