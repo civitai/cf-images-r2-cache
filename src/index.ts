@@ -60,7 +60,8 @@ async function handleRequest(request: Request, env: Env, ctx: ExecutionContext) 
     // Cache it in the browser for your specified time
     'cache-control': `public, max-age=${env.CACHE_DURATION ?? maxAge}`,
     'access-control-allow-origin': '*',
-    'content-security-policy': "default-src 'none'; navigate-to 'none'; form-action 'none'"
+    'content-security-policy': "default-src 'none'; navigate-to 'none'; form-action 'none'",
+    'content-type': 'image/jpeg'
   });
   response = new Response(image, { headers });
 

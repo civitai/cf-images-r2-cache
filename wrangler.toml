@@ -1,4 +1,4 @@
-name = "civitai-image-cache"
+name = "image-cache"
 main = "src/index.ts"
 compatibility_date = "2022-11-18"
 
