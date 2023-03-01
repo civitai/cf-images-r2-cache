@@ -1,5 +1,6 @@
 export interface Env {
   CACHE_BUCKET: R2Bucket;
+  IMAGE_ROOT: string;
   IMAGE_HOST?: string;
   CACHE_DURATION?: number;
 }
@@ -23,12 +24,18 @@ async function handleRequest(request: Request, env: Env, ctx: ExecutionContext) 
   requestUrl.protocol = 'https';
   requestUrl.port = '443';
 
-  const cacheKey = requestUrl.pathname.substring(1);
+  const cacheKeyRegex = new RegExp(`\\/${env.IMAGE_ROOT}\\/([\\w\\-]+)\\/([\\w\\-=,]+)\\/?([\\w\\.]+)?`)
+  const [match, imageId, params, name] = cacheKeyRegex.exec(requestUrl.pathname) ?? [];
+  if (!match)
+    return new Response(null, { status: 404, statusText: 'Not Found' });
+
+  const cacheKey = `${env.IMAGE_ROOT}/${imageId}/${params}`;
+  requestUrl.pathname = `/${cacheKey}`;
   const cache = caches.default;
 
   // Check whether the value is already available in the cache
   // if not, you will need to fetch it from R2, and store it in the cache
-  let response = await cache.match(request);
+  let response = await cache.match(requestUrl.toString());
   if (response) return response;
   console.log(`Cache miss for: ${cacheKey}.`);
 
@@ -66,7 +73,7 @@ async function handleRequest(request: Request, env: Env, ctx: ExecutionContext) 
   response = new Response(image, { headers });
 
   // Save the response to the cache for next time
-  ctx.waitUntil(cache.put(request, response.clone()));
+  ctx.waitUntil(cache.put(requestUrl.toString(), response.clone()));
 
   return response;
 }
